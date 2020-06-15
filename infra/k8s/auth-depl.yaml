@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: auth
+          # image: us.gcr.io/quantum-theme-280313/auth
+          image: chihweidavidliu/auth
+          env:
+            - name: JWT_KEY # the name we will use to reference this variable within auth
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret # the name of the secret we created
+                  key: JWT_KEY # the key within the secret whose value we will assign to this env variable
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-srv
+spec:
+  selector:
+    app: auth
+  type: ClusterIP
+  ports:
+    - name: auth
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
