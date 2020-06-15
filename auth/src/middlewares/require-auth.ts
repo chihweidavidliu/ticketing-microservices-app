@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from "express";
-import { BadRequestError } from "../errors/bad-request-error";
+import { NotAuthorizedError } from "../errors/not-authorized-error";
 
-export const validateUser = (
+export const requireAuth = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   if (!req.currentUser) {
-    throw new BadRequestError("Invalid Credentials");
+    throw new NotAuthorizedError();
   }
 
   next();

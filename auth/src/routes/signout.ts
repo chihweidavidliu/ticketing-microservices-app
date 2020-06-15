@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { validateUser } from "../middlewares/user-validator";
+import { requireAuth } from "../middlewares/require-auth";
 import { currentUser } from "../middlewares/current-user";
 
 const signoutRouter = Router();
@@ -7,7 +7,7 @@ const signoutRouter = Router();
 signoutRouter.post(
   "/api/users/signout",
   currentUser,
-  validateUser,
+  requireAuth,
   (req, res) => {
     delete req.currentUser;
     req.session = null;

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { validateUser } from "../middlewares/user-validator";
+import { requireAuth } from "../middlewares/require-auth";
 import { currentUser } from "../middlewares/current-user";
 
 const currentUserRouter = Router();
@@ -7,7 +7,7 @@ const currentUserRouter = Router();
 currentUserRouter.get(
   "/api/users/currentuser",
   currentUser,
-  validateUser,
+  requireAuth,
   (req, res) => {
     return res.send({ currentUser: req.currentUser });
   }
