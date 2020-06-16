@@ -26,15 +26,15 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.18",
     "ts-node-dev": "^1.0.0-pre.47",
-    "typescript": "^3.9.5"
-  },
-  "devDependencies": {
+    "typescript": "^3.9.5",
     "@types/bcrypt": "^3.0.0",
     "@types/cookie-session": "^2.0.40",
     "@types/express": "^4.17.6",
     "@types/jest": "^26.0.0",
     "@types/jsonwebtoken": "^8.5.0",
-    "@types/mongoose": "^5.7.24",
+    "@types/mongoose": "^5.7.24"
+  },
+  "devDependencies": {
     "@types/supertest": "^2.0.9",
     "jest": "^26.0.1",
     "mongodb-memory-server": "^6.6.1",

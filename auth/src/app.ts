@@ -21,7 +21,7 @@ app.set("trust proxy", true);
 app.use(
   cookieSession({
     signed: false, // don't encrypt as we are using jwts are already tamper resistant
-    secure: true,
+    secure: process.env.NODE_ENV !== "test",
   })
 );
 
