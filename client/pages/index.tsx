@@ -1,5 +1,7 @@
 import styled from "styled-components";
+import { NextPage, NextPageContext } from "next";
 import { PageWrapper } from "../components/PageWrapper";
+import buildClient from "../api/buildClient";
 
 const ContentGrid = styled.div`
   width: 90%;
@@ -16,6 +18,7 @@ const ContentGrid = styled.div`
 const TitleWrapper = styled.div`
   text-align: center;
   padding: 30px;
+  color: white;
 `;
 
 const H1 = styled.h1`
@@ -27,16 +30,28 @@ const H1 = styled.h1`
   }
 `;
 
-const IndexPage = () => {
+interface IIndexPageProps {
+  currentUser: { id: string; email: string } | null;
+}
+
+const IndexPage: NextPage<IIndexPageProps> = ({ currentUser }) => {
   return (
     <PageWrapper>
       <ContentGrid>
         <TitleWrapper>
           <H1>Welcome</H1>
+          <p>{currentUser ? "You are signed in" : "You are not signed in"}</p>
         </TitleWrapper>
       </ContentGrid>
     </PageWrapper>
   );
+};
+
+IndexPage.getInitialProps = async (context: NextPageContext) => {
+  // build preconfigured axios instance depending on whether we are running on the server or in the browser
+  const axiosClient = buildClient(context);
+  const { data } = await axiosClient.get("/api/users/currentUser");
+  return data;
 };
 
 export default IndexPage;

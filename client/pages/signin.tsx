@@ -1,12 +1,12 @@
 import SigninSignup from "../components/SigninSignup";
 import { PageWrapper } from "../components/PageWrapper";
 
-const SignupPage = () => {
+const SigninPage = () => {
   return (
     <PageWrapper>
-      <SigninSignup isSignupForm />
+      <SigninSignup />
     </PageWrapper>
   );
 };
 
-export default SignupPage;
+export default SigninPage;

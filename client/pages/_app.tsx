@@ -1,10 +1,12 @@
 import React from "react";
-import { AppProps } from "next/app";
+import { AppProps, AppContext } from "next/app";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import NProgress from "nprogress";
 import Router from "next/router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Nav from "../components/Nav";
+import buildClient from "../api/buildClient";
+import { AuthProvider } from "../context/AuthContext";
 
 Router.events.on("routeChangeStart", () => {
   NProgress.start();
@@ -49,15 +51,36 @@ const GlobalStyle = createGlobalStyle<IThemeWrapper>`
 `;
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
+  console.log("pageProps", pageProps);
   return (
-    <>
-      <Nav />
-      <ThemeProvider theme={theme}>
-        <GlobalStyle />
+    <ThemeProvider theme={theme}>
+      <GlobalStyle />
+      <AuthProvider currentUser={pageProps.currentUser}>
+        <Nav />
         <Component {...pageProps} />
-      </ThemeProvider>
-    </>
+      </AuthProvider>
+    </ThemeProvider>
   );
+};
+
+MyApp.getInitialProps = async ({ Component, ctx }: AppContext) => {
+  // build preconfigured axios instance depending on whether we are running on the server or in the browser
+  const axiosClient = buildClient(ctx);
+
+  // fetch current user
+  const { data } = await axiosClient.get("/api/users/currentUser");
+
+  // defining getInitialProps on a custom app component will mean that the getInitialProps of our pages does not run automatically
+  // check if the page currently being rendered (the Component) has a getInitialProps function and if so, run it as well
+  let pageProps: any = { currentUser: data.currentUser };
+
+  if (Component.getInitialProps) {
+    pageProps = { ...pageProps, ...(await Component?.getInitialProps(ctx)) };
+  }
+
+  // pass down query string
+  pageProps.query = ctx.query;
+  return { pageProps };
 };
 
 export default MyApp;

@@ -1,6 +1,8 @@
 import styled from "styled-components";
 
-export const Card = styled.div`
+interface ICardProps {}
+
+export const Card = styled.div<ICardProps>`
   background: whitesmoke;
   padding: 30px;
   border-radius: 4px;

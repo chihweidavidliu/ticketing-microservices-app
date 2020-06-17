@@ -1,7 +1,8 @@
 import styled from "styled-components";
 
 export const PageWrapper = styled.div`
-  height: calc(100vh - 48px);
+  position: relative;
+  height: calc(100vh - 55px);
   display: flex;
   width: 100vw;
   justify-content: center;

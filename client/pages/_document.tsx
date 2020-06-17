@@ -39,18 +39,9 @@ export default class MyDocument extends Document<any> {
         <Head>
           <link
             rel="stylesheet"
-            href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"
-          />
-          <link
-            href="https://fonts.googleapis.com/css?family=Fredoka+One"
-            rel="stylesheet"
-          />
-          <link
-            rel="stylesheet"
             type="text/css"
             href="../static/nprogress.css"
           />
-          <link rel="stylesheet" href="../static/base.css" />
           {this.props.styleTags /*rendering the actually stylesheet*/}
         </Head>
         <body>
