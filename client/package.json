@@ -1,0 +1,32 @@
+{
+  "name": "with-typescript",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start",
+    "type-check": "tsc"
+  },
+  "dependencies": {
+    "@types/node": "^12.12.21",
+    "@types/nprogress": "^0.2.0",
+    "@types/react": "^16.9.16",
+    "@types/react-bootstrap": "^1.0.1",
+    "@types/react-dom": "^16.9.4",
+    "@types/styled-components": "^5.1.0",
+    "@types/yup": "^0.29.3",
+    "axios": "^0.19.2",
+    "bootstrap": "^4.5.0",
+    "formik": "^2.1.4",
+    "next": "latest",
+    "nprogress": "^0.2.0",
+    "react": "^16.12.0",
+    "react-bootstrap": "^1.0.1",
+    "react-dom": "^16.12.0",
+    "styled-components": "^5.1.1",
+    "typescript": "3.7.3",
+    "yup": "^0.29.1"
+  },
+  "devDependencies": {},
+  "license": "ISC"
+}
