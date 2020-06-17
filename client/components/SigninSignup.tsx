@@ -12,7 +12,7 @@ import { useRouter } from "next/router";
 import { FadeIn } from "./FadeIn";
 
 const ContentGrid = styled.div`
-  width: 90%;
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: max-content 1fr;

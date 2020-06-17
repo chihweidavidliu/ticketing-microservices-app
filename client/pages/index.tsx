@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { NextPage, NextPageContext } from "next";
 import { PageWrapper } from "../components/PageWrapper";
 import buildClient from "../api/buildClient";
+import { FadeIn } from "../components/FadeIn";
 
 const ContentGrid = styled.div`
   width: 90%;
@@ -24,9 +25,9 @@ const TitleWrapper = styled.div`
 const H1 = styled.h1`
   margin: 0;
   color: white;
-  font-size: 24px;
+  font-size: 48px;
   @media (min-width: ${(props) => props.theme.tabletBreakpoint}) {
-    font-size: 48px;
+    font-size: 64px;
   }
 `;
 
@@ -37,12 +38,14 @@ interface IIndexPageProps {
 const IndexPage: NextPage<IIndexPageProps> = ({ currentUser }) => {
   return (
     <PageWrapper>
-      <ContentGrid>
-        <TitleWrapper>
-          <H1>Welcome</H1>
-          <p>{currentUser ? "You are signed in" : "You are not signed in"}</p>
-        </TitleWrapper>
-      </ContentGrid>
+      <FadeIn>
+        <ContentGrid>
+          <TitleWrapper>
+            <H1>Welcome</H1>
+            <p>{currentUser ? "You are signed in" : "You are not signed in"}</p>
+          </TitleWrapper>
+        </ContentGrid>
+      </FadeIn>
     </PageWrapper>
   );
 };
