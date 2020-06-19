@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { body } from "express-validator";
-import { User } from "../models/user";
 import { BadRequestError, validateRequest } from "@dlticketbuddy/common";
+import { User } from "../models/user";
 import { PasswordManager } from "../services/password-manager";
 import { createToken } from "../services/createToken";
 

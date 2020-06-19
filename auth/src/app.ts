@@ -3,13 +3,12 @@ import express from "express";
 import "express-async-errors";
 import cookieSession from "cookie-session";
 import { json } from "body-parser";
+import { errorHandler, NotFoundError } from "@dlticketbuddy/common";
 
 import { currentUserRouter } from "./routes/current-user";
 import { signinRouter } from "./routes/signin";
 import { signoutRouter } from "./routes/signout";
 import { signupRouter } from "./routes/signup";
-import { errorHandler } from "@dlticketbuddy/common";
-import { NotFoundError } from "@dlticketbuddy/common";
 
 const app = express();
 
