@@ -1,6 +1,5 @@
 import { Router } from "express";
-import { requireAuth } from "@dlticketbuddy/common";
-import { currentUser } from "@dlticketbuddy/common";
+import { requireAuth, currentUser } from "@dlticketbuddy/common";
 
 const signoutRouter = Router();
 

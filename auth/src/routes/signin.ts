@@ -1,10 +1,9 @@
 import { Router, Request, Response } from "express";
 import { body } from "express-validator";
 import { User } from "../models/user";
-import { BadRequestError } from "@dlticketbuddy/common";
+import { BadRequestError, validateRequest } from "@dlticketbuddy/common";
 import { PasswordManager } from "../services/password-manager";
 import { createToken } from "../services/createToken";
-import { validateRequest } from "@dlticketbuddy/common";
 
 const signinRouter = Router();
 
