@@ -2,7 +2,7 @@ import React, { createContext, useContext, FunctionComponent } from "react";
 import { IUser } from "../types/IUser";
 import { useRequest } from "../hooks/useRequest";
 import { HTTP_METHOD } from "../types/httpMethod";
-import { useRouter, Router } from "next/router";
+import { useRouter } from "next/router";
 
 interface IAuthContextProps {
   currentUser: IUser | null;

@@ -5,7 +5,7 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "type-check": "tsc"
+    "check-types": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "@types/axios": "^0.14.0",

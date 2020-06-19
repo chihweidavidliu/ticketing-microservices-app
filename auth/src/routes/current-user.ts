@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { currentUser } from "../middlewares/current-user";
+import { currentUser } from "@dlticketbuddy/common";
 
 const currentUserRouter = Router();
 

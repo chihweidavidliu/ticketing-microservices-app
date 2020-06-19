@@ -44,6 +44,7 @@ const H2 = styled.h2`
 
 const P = styled.p`
   text-align: center;
+  margin: 10px 0px 0px 0px;
 `;
 
 const A = styled.a`

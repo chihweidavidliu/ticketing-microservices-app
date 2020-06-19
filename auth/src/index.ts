@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { DatabaseConnectionError } from "./errors/database-connection-error";
+import { DatabaseConnectionError } from "@dlticketbuddy/common";
 
 // In this project we set up our express app in a separate file so that it can be used for testing without having already specified a port
 import { app } from "./app";
