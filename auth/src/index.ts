@@ -9,14 +9,18 @@ const start = async () => {
     throw new Error("JWT_KEY must be defined");
   }
 
+  if (!process.env.MONGO_URI) {
+    throw new Error("MONGO_URI must be defined");
+  }
+
   try {
-    await mongoose.connect("mongodb://auth-mongo-srv:27017/auth", {
+    await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
     });
 
-    console.log("Connected to MongoDb");
+    console.log(`Connected to MongoDb at ${process.env.MONGO_URI}`);
 
     // start up our server
     app.listen(3000, () => {

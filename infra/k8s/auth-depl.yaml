@@ -17,6 +17,8 @@ spec:
           # image: us.gcr.io/quantum-theme-280313/auth
           image: chihweidavidliu/auth
           env:
+            - name: MONGO_URI
+              value: "mongodb://auth-mongo-srv:27017/auth" # this will be visible in the public repo but it's not an issue as this is only accessible from within our cluster
             - name: JWT_KEY # the name we will use to reference this variable within auth
               valueFrom:
                 secretKeyRef:

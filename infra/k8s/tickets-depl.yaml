@@ -17,6 +17,8 @@ spec:
           # image: us.gcr.io/quantum-theme-280313/tickets
           image: chihweidavidliu/tickets
           env:
+            - name: MONGO_URI
+              value: "mongodb://tickets-mongo-srv:27017/tickets" # this will be visible in the public repo but it's not an issue as this is only accessible from within our cluster
             - name: JWT_KEY # the name we will use to reference this variable within tickets
               valueFrom:
                 secretKeyRef:

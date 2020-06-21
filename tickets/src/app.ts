@@ -3,7 +3,13 @@ import express from "express";
 import "express-async-errors";
 import cookieSession from "cookie-session";
 import { json } from "body-parser";
-import { errorHandler, NotFoundError } from "@dlticketbuddy/common";
+import {
+  NotFoundError,
+  currentUser,
+  errorHandler,
+} from "@dlticketbuddy/common";
+
+import { ticketRouter } from "./routes/ticketRouter";
 
 const app = express();
 
@@ -18,6 +24,9 @@ app.use(
     secure: process.env.NODE_ENV !== "test",
   })
 );
+
+app.use(currentUser); // add current user to body
+app.use(ticketRouter);
 
 app.all("*", (req, res, next) => {
   throw new NotFoundError();
