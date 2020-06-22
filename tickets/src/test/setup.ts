@@ -1,6 +1,9 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 
+// mock out our NATS client initialiser (jest will instead look for the corresponding file in the __mocks__ folder in the same directory)
+jest.mock("../events/nats-wrapper.ts");
+
 let mongo: any;
 
 beforeAll(async () => {
@@ -17,6 +20,9 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  // clear mocks
+  jest.clearAllMocks();
+
   // clear data before each test
   const collections = await mongoose.connection.db.collections();
   for (let collection of collections) {

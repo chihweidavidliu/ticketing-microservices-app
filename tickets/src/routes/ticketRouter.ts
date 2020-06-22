@@ -3,11 +3,13 @@ import { body } from "express-validator";
 import {
   requireAuth,
   validateRequest,
-  BadRequestError,
   NotFoundError,
   NotAuthorizedError,
 } from "@dlticketbuddy/common";
 import { Ticket } from "../models/ticket";
+import { TicketCreatedPublisher } from "../events/publishers/ticket-created-publisher";
+import { TicketUpdatedPublisher } from "../events/publishers/ticket-updated-publisher";
+import { natsWrapper } from "../events/nats-wrapper";
 
 const ticketRouter = Router();
 
@@ -32,6 +34,13 @@ ticketRouter.post(
     });
 
     await newTicket.save();
+
+    await new TicketCreatedPublisher(natsWrapper.client).publish({
+      id: newTicket.id,
+      title: newTicket.title,
+      price: newTicket.price,
+      userId: req.currentUser!.id,
+    });
 
     return res.status(201).send(newTicket);
   }
@@ -82,6 +91,13 @@ ticketRouter.put(
     });
 
     const updated = await ticket.save();
+
+    await new TicketUpdatedPublisher(natsWrapper.client).publish({
+      id: updated.id,
+      title: updated.title,
+      price: updated.price,
+      userId: req.currentUser!.id,
+    });
 
     res.send(updated);
   }

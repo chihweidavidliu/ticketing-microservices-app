@@ -3,6 +3,7 @@ import { TicketCreatedPublisher } from "./events/ticket-created-publisher";
 console.clear();
 
 // create client to connect to streaming server (often referred to as stan)
+// the clusterId (first argument) was specified in args array in out k8s deployment config for the server
 const stan = nats.connect("ticketing", "abc", {
   url: "http://localhost:4222",
 });
