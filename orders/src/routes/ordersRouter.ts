@@ -4,6 +4,7 @@ import {
   NotFoundError,
   OrderStatus,
   BadRequestError,
+  NotAuthorizedError,
 } from "@dlticketbuddy/common";
 import { body } from "express-validator";
 import mongoose from "mongoose";
@@ -21,12 +22,18 @@ ordersRouter.get("/api/orders", requireAuth, async (req, res) => {
   res.send(orders);
 });
 
-ordersRouter.get("/api/orders/:orderId", async (req, res) => {
-  res.send("orders");
-});
+ordersRouter.get("/api/orders/:orderId", requireAuth, async (req, res) => {
+  const { orderId } = req.params;
+  const order = await Order.findById(orderId).populate("ticket");
+  if (!order) {
+    throw new NotFoundError();
+  }
 
-ordersRouter.put("/api/orders/:orderId", async (req, res) => {
-  res.send("orders");
+  if (order.userId !== req.currentUser!.id) {
+    throw new NotAuthorizedError();
+  }
+
+  res.send(order);
 });
 
 ordersRouter.post(
@@ -76,8 +83,22 @@ ordersRouter.post(
   }
 );
 
-ordersRouter.delete("/api/orders/:orderId", async (req, res) => {
-  res.send("orders");
+ordersRouter.delete("/api/orders/:orderId", requireAuth, async (req, res) => {
+  const { orderId } = req.params;
+
+  const order = await Order.findById(orderId).populate("ticket");
+  if (!order) {
+    throw new NotFoundError();
+  }
+
+  if (order.userId !== req.currentUser!.id) {
+    throw new NotAuthorizedError();
+  }
+
+  order.status = OrderStatus.Cancelled;
+  await order.save();
+
+  res.status(204).send("Order Cancelled");
 });
 
 export { ordersRouter };

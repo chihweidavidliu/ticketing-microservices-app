@@ -13,11 +13,13 @@ const createTicket = async () => {
 };
 const orderTicket = async (ticketId: string, cookie: string[]) => {
   // make the order
-  await request(app)
+  const response = await request(app)
     .post("/api/orders")
     .set("Cookie", cookie)
     .send({ ticketId })
     .expect(201);
+
+  return response;
 };
 
 describe("GET /api/orders", () => {
@@ -41,8 +43,8 @@ describe("GET /api/orders", () => {
 
     // make the orders, one for the other user and one for our test user
     await orderTicket(ticket1.id, userTwoCookie);
-    await orderTicket(ticket2.id, userOneCookie);
-    await orderTicket(ticket3.id, userOneCookie);
+    const { body: orderOne } = await orderTicket(ticket2.id, userOneCookie);
+    const { body: orderTwo } = await orderTicket(ticket3.id, userOneCookie);
 
     // fetch orders for user one
     const response = await request(app)
@@ -53,11 +55,108 @@ describe("GET /api/orders", () => {
 
     expect(response.body.length).toEqual(2);
 
-    const order1 = response.body[0];
-    expect(order1.ticket.id).toEqual(ticket2.id);
+    expect(response.body[0].id).toEqual(orderOne.id);
+    expect(response.body[0].ticket.id).toEqual(ticket2.id);
 
-    const order2 = response.body[1];
-    expect(order2.ticket.id).toEqual(ticket3.id);
+    expect(response.body[1].id).toEqual(orderTwo.id);
+    expect(response.body[1].ticket.id).toEqual(ticket3.id);
+  });
+});
+
+describe("GET /api/orders/:orderId", () => {
+  it("should return 401 if the user is not signed in", async () => {
+    const userOne = new mongoose.Types.ObjectId().toHexString();
+    const cookie = await signin(userOne);
+    const ticket = await createTicket();
+    const { body: orderOne } = await orderTicket(ticket.id, cookie);
+
+    await request(app).get(`/api/orders/${orderOne.id}`).send().expect(401);
+  });
+
+  it("should return 404 if the order does not exist", async () => {
+    const userOne = new mongoose.Types.ObjectId().toHexString();
+    const cookie = await signin(userOne);
+
+    const nonExistentId = new mongoose.Types.ObjectId().toHexString();
+
+    await request(app)
+      .get(`/api/orders/${nonExistentId}`)
+      .set("Cookie", cookie)
+      .send()
+      .expect(404);
+  });
+
+  it("should return 401 if the order does not belong to current user", async () => {
+    const userOne = new mongoose.Types.ObjectId().toHexString();
+    const userTwo = new mongoose.Types.ObjectId().toHexString();
+
+    // user one creates the order
+    const cookie = await signin(userOne);
+    const ticket = await createTicket();
+    const { body: orderOne } = await orderTicket(ticket.id, cookie);
+
+    // user two signs in and tries to get the order
+    const userTwoCookie = await signin(userTwo);
+
+    await request(app)
+      .get(`/api/orders/${orderOne.id}`)
+      .set("Cookie", userTwoCookie)
+      .send()
+      .expect(401);
+  });
+
+  it("should return 200 if valid details provided", async () => {
+    const userOne = new mongoose.Types.ObjectId().toHexString();
+    const cookie = await signin(userOne);
+    const ticket = await createTicket();
+    const { body: orderOne } = await orderTicket(ticket.id, cookie);
+
+    await request(app)
+      .get(`/api/orders/${orderOne.id}`)
+      .set("Cookie", cookie)
+      .send()
+      .expect(200);
+  });
+});
+
+describe("DELETE /api/orders/:orderId", () => {
+  it("should return 401 if the user is not signed in", async () => {
+    const orderId = new mongoose.Types.ObjectId().toHexString();
+    await request(app).delete(`/api/orders/${orderId}`).send().expect(401);
+  });
+
+  it("should return 401 if the order does not belong to current user", async () => {
+    const userOne = new mongoose.Types.ObjectId().toHexString();
+    const userTwo = new mongoose.Types.ObjectId().toHexString();
+
+    // user one creates the order
+    const cookie = await signin(userOne);
+    const ticket = await createTicket();
+    const { body: orderOne } = await orderTicket(ticket.id, cookie);
+
+    // user two signs in and tries to get the order
+    const userTwoCookie = await signin(userTwo);
+
+    await request(app)
+      .delete(`/api/orders/${orderOne.id}`)
+      .set("Cookie", userTwoCookie)
+      .send()
+      .expect(401);
+  });
+
+  it("should return 204 and update the status to cancelled", async () => {
+    const cookie = await signin();
+    const ticket = await createTicket();
+    const { body: order } = await orderTicket(ticket.id, cookie);
+
+    await request(app)
+      .delete(`/api/orders/${order.id}`)
+      .set("Cookie", cookie)
+      .send()
+      .expect(204);
+
+    const updatedOrder = await Order.findById(order.id);
+    expect(updatedOrder?.status).toEqual(OrderStatus.Cancelled);
   });
 });
 
