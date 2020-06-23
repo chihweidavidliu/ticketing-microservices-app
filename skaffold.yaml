@@ -44,6 +44,14 @@ build:
         manual:
           - src: "src/**/*.ts"
             dest: .
+    - image: chihweidavidliu/orders
+      context: orders
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts"
+            dest: .
     - image: chihweidavidliu/client
       context: client
       docker:

@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tickets-depl
+  name: orders-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tickets
+      app: orders
   template:
     metadata:
       labels:
-        app: tickets
+        app: orders
     spec:
       containers:
-        - name: tickets
-          # image: us.gcr.io/quantum-theme-280313/tickets
-          image: chihweidavidliu/tickets
+        - name: orders
+          # image: us.gcr.io/quantum-theme-280313/orders
+          image: chihweidavidliu/orders
           env:
             - name: NATS_CLIENT_ID
               valueFrom:
@@ -26,8 +26,8 @@ spec:
             - name: NATS_URL
               value: "http://nats-srv:4222"
             - name: MONGO_URI
-              value: "mongodb://tickets-mongo-srv:27017/tickets" # this will be visible in the public repo but it's not an issue as this is only accessible from within our cluster
-            - name: JWT_KEY # the name we will use to reference this variable within tickets
+              value: "mongodb://orders-mongo-srv:27017/orders" # this will be visible in the public repo but it's not an issue as this is only accessible from within our cluster
+            - name: JWT_KEY # the name we will use to reference this variable within orders
               valueFrom:
                 secretKeyRef:
                   name: jwt-secret # the name of the secret we created
@@ -37,13 +37,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: tickets-srv
+  name: orders-srv
 spec:
   selector:
-    app: tickets
+    app: orders
   type: ClusterIP
   ports:
-    - name: tickets
+    - name: orders
       protocol: TCP
       port: 3000
       targetPort: 3000
