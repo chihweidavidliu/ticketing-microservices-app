@@ -40,6 +40,7 @@ ticketRouter.post(
       title: newTicket.title,
       price: newTicket.price,
       userId: req.currentUser!.id,
+      version: newTicket.version,
     });
 
     return res.status(201).send(newTicket);
@@ -97,6 +98,7 @@ ticketRouter.put(
       title: updated.title,
       price: updated.price,
       userId: req.currentUser!.id,
+      version: updated.version,
     });
 
     res.send(updated);

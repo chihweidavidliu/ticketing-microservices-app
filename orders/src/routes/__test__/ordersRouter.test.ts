@@ -8,7 +8,9 @@ import { Order } from "../../models/order";
 import { natsWrapper } from "../../events/nats-wrapper";
 
 const createTicket = async () => {
-  const ticket = Ticket.build({ title: "concert1", price: 1000 });
+  const id = new mongoose.Types.ObjectId().toHexString();
+
+  const ticket = Ticket.build({ id, title: "concert1", price: 1000 });
   await ticket.save();
   return ticket;
 };
@@ -195,9 +197,7 @@ describe("POST /api/orders", () => {
 
   it("returns an error if the ticket is already reserved", async () => {
     const cookie = await signin();
-    const ticket = Ticket.build({ title: "concert", price: 1000 });
-
-    await ticket.save();
+    const ticket = await createTicket();
 
     const order = Order.build({
       ticket,
@@ -217,9 +217,7 @@ describe("POST /api/orders", () => {
 
   it("should return 201 and the order if ticket id is valid", async () => {
     const cookie = await signin();
-    const ticket = Ticket.build({ title: "concert", price: 1000 });
-
-    await ticket.save();
+    const ticket = await createTicket();
 
     // check no order for the ticket has been created yet
     let order = await Order.findOne({ ticket: ticket.id });
@@ -242,9 +240,7 @@ describe("POST /api/orders", () => {
 
   it("publichses an event after order creation", async () => {
     const cookie = await signin();
-    const ticket = Ticket.build({ title: "concert", price: 1000 });
-
-    await ticket.save();
+    const ticket = await createTicket();
 
     // check no order for the ticket has been created yet
     let order = await Order.findOne({ ticket: ticket.id });

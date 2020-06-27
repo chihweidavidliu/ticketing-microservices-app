@@ -1,5 +1,6 @@
 import mongoose, { Schema, Model, Document } from "mongoose";
 import { OrderStatus } from "@dlticketbuddy/common";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 import { TicketDocument } from "./ticket";
 
 interface OrderAttributes {
@@ -14,6 +15,7 @@ interface OrderDocument extends Document {
   status: OrderStatus;
   expiresAt: Date;
   ticket: TicketDocument;
+  version: number;
 }
 
 interface OrderModel extends Model<OrderDocument> {
@@ -47,6 +49,10 @@ const OrderSchema: Schema = new Schema(
     },
   }
 );
+
+// set up versioning to combat concurrency issues
+OrderSchema.set("versionKey", "version"); // use custom 'version' field instead of __v to track version
+OrderSchema.plugin(updateIfCurrentPlugin);
 
 OrderSchema.statics.build = (attributes: OrderAttributes) => {
   const { userId, status, expiresAt, ticket } = attributes;

@@ -84,6 +84,7 @@ ordersRouter.post(
     new OrderCreatedPublisher(natsWrapper.client).publish({
       id: order.id,
       status: order.status,
+      version: order.version,
       userId: order.userId,
       expiresAt: order.expiresAt.toISOString(), // save date as UTC date so it's not timezone dependent
       ticket: { id: ticket.id, price: ticket.price },
@@ -108,9 +109,9 @@ ordersRouter.delete("/api/orders/:orderId", requireAuth, async (req, res) => {
   order.status = OrderStatus.Cancelled;
   await order.save();
 
-  // TODO: publish an order:cancelled event
   new OrderCancelledPublisher(natsWrapper.client).publish({
     id: order.id,
+    version: order.version,
     ticket: { id: order.ticket.id, price: order.ticket.price },
   });
 

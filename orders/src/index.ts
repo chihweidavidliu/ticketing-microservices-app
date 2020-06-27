@@ -4,6 +4,8 @@ import { DatabaseConnectionError } from "@dlticketbuddy/common";
 // In this project we set up our express app in a separate file so that it can be used for testing without having already specified a port
 import { app } from "./app";
 import { natsWrapper } from "./events/nats-wrapper";
+import { TicketCreatedListener } from "./events/listeners/ticket-created-listener";
+import { TicketUpdatedListener } from "./events/listeners/ticket-updated-listener";
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -36,6 +38,9 @@ const start = async () => {
     // end process
     process.exit();
   });
+
+  new TicketCreatedListener(natsWrapper.client).listen();
+  new TicketUpdatedListener(natsWrapper.client).listen();
 
   // intercept termination requests and close connection to the NATS streaming server
   process.on("SIGINT", () => natsWrapper.client.close());

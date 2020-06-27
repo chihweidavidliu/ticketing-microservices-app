@@ -1,4 +1,5 @@
 import mongoose, { Schema, Model, Document } from "mongoose";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 interface TicketAttributes {
   title: string;
@@ -6,7 +7,12 @@ interface TicketAttributes {
   userId: string;
 }
 
-interface TicketDocument extends TicketAttributes, Document {}
+interface TicketDocument extends Document {
+  title: string;
+  price: number;
+  userId: string;
+  version: number;
+}
 
 interface TicketModel extends Model<TicketDocument> {
   build(attributes: TicketAttributes): TicketDocument;
@@ -28,6 +34,10 @@ const TicketSchema: Schema = new Schema(
     },
   }
 );
+
+// set up versioning to combat concurrency issues
+TicketSchema.set("versionKey", "version"); // use custom 'version' field instead of __v to track version
+TicketSchema.plugin(updateIfCurrentPlugin);
 
 TicketSchema.statics.build = (attributes: TicketAttributes) => {
   return new Ticket(attributes);
