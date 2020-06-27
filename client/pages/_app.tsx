@@ -51,7 +51,6 @@ const GlobalStyle = createGlobalStyle<IThemeWrapper>`
 `;
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
-  console.log("pageProps", pageProps);
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />

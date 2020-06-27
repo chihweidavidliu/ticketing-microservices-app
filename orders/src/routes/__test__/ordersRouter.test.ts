@@ -2,9 +2,10 @@ import request from "supertest";
 import mongoose from "mongoose";
 import { app } from "../../app";
 import { signin } from "../../test/authHelper";
-import { Ticket, TicketDocument } from "../../models/ticket";
+import { Ticket } from "../../models/ticket";
 import { OrderStatus } from "@dlticketbuddy/common";
 import { Order } from "../../models/order";
+import { natsWrapper } from "../../events/nats-wrapper";
 
 const createTicket = async () => {
   const ticket = Ticket.build({ title: "concert1", price: 1000 });
@@ -158,6 +159,20 @@ describe("DELETE /api/orders/:orderId", () => {
     const updatedOrder = await Order.findById(order.id);
     expect(updatedOrder?.status).toEqual(OrderStatus.Cancelled);
   });
+
+  it("should publish an event after order cancellation", async () => {
+    const cookie = await signin();
+    const ticket = await createTicket();
+    const { body: order } = await orderTicket(ticket.id, cookie);
+
+    await request(app)
+      .delete(`/api/orders/${order.id}`)
+      .set("Cookie", cookie)
+      .send()
+      .expect(204);
+
+    expect(natsWrapper.client.publish).toHaveBeenCalled();
+  });
 });
 
 describe("POST /api/orders", () => {
@@ -225,5 +240,22 @@ describe("POST /api/orders", () => {
     expect(response.body.expiresAt).toBeTruthy();
   });
 
-  it.todo("emits an order created event");
+  it("publichses an event after order creation", async () => {
+    const cookie = await signin();
+    const ticket = Ticket.build({ title: "concert", price: 1000 });
+
+    await ticket.save();
+
+    // check no order for the ticket has been created yet
+    let order = await Order.findOne({ ticket: ticket.id });
+    expect(order).toBeFalsy();
+
+    await request(app)
+      .post("/api/orders")
+      .set("Cookie", cookie)
+      .send({ ticketId: ticket.id })
+      .expect(201);
+
+    expect(natsWrapper.client.publish).toHaveBeenCalled();
+  });
 });

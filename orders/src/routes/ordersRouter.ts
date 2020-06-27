@@ -10,6 +10,9 @@ import { body } from "express-validator";
 import mongoose from "mongoose";
 import { Ticket } from "../models/ticket";
 import { Order } from "../models/order";
+import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
+import { natsWrapper } from "../events/nats-wrapper";
+import { OrderCancelledPublisher } from "../events/publishers/order-cancelled-publisher";
 
 const ordersRouter = Router();
 
@@ -78,6 +81,13 @@ ordersRouter.post(
     await order.save();
 
     // Publish an event saying that an order was created
+    new OrderCreatedPublisher(natsWrapper.client).publish({
+      id: order.id,
+      status: order.status,
+      userId: order.userId,
+      expiresAt: order.expiresAt.toISOString(), // save date as UTC date so it's not timezone dependent
+      ticket: { id: ticket.id, price: ticket.price },
+    });
 
     res.status(201).send(order);
   }
@@ -97,6 +107,12 @@ ordersRouter.delete("/api/orders/:orderId", requireAuth, async (req, res) => {
 
   order.status = OrderStatus.Cancelled;
   await order.save();
+
+  // TODO: publish an order:cancelled event
+  new OrderCancelledPublisher(natsWrapper.client).publish({
+    id: order.id,
+    ticket: { id: order.ticket.id, price: order.ticket.price },
+  });
 
   res.status(204).send("Order Cancelled");
 });
