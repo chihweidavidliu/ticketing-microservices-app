@@ -210,6 +210,27 @@ describe("PUT /api/tickets/:id", () => {
     expect(natsWrapper.client.publish).toHaveBeenCalled();
   });
 
+  it("rejects updates if the ticket is reserved", async () => {
+    const ticket = await createTicket();
+    const cookie = await signin(ticket.userId);
+
+    const newTitle = "New Title";
+    const newPrice = 10;
+    const orderId = new mongoose.Types.ObjectId().toHexString();
+
+    ticket.set({ orderId });
+    await ticket.save();
+
+    await request(app)
+      .put(`/api/tickets/${ticket._id}`)
+      .set("Cookie", cookie)
+      .send({
+        title: newTitle,
+        price: newPrice,
+      })
+      .expect(400);
+  });
+
   it("returns 400 if input is invalid", async () => {
     const ticket = await createTicket();
     const cookie = await signin(ticket.userId);

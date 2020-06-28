@@ -4,6 +4,8 @@ import { DatabaseConnectionError } from "@dlticketbuddy/common";
 // In this project we set up our express app in a separate file so that it can be used for testing without having already specified a port
 import { app } from "./app";
 import { natsWrapper } from "./events/nats-wrapper";
+import { OrderCreatedListener } from "./events/listeners/OrderCreatedListener";
+import { OrderCancelledListener } from "./events/listeners/OrderCancelledListener";
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -40,6 +42,9 @@ const start = async () => {
   // intercept termination requests and close connection to the NATS streaming server
   process.on("SIGINT", () => natsWrapper.client.close());
   process.on("SIGTERM", () => natsWrapper.client.close());
+
+  new OrderCreatedListener(natsWrapper.client).listen();
+  new OrderCancelledListener(natsWrapper.client).listen();
 
   try {
     await mongoose.connect(process.env.MONGO_URI, {
